@@ -12,9 +12,37 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    let randomWordArray = ["Milk", "Coconut", "Computer", "Language", "Book"]
-    var currentWord: String?
+    let randomWordArray = ["milk", "papik", "kek"]
+    var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
+    var questionArray = [Character]()
+    var questionObserver = "" {
+        didSet {
+            
+        }
+    }
+    var characterObserver = "" {
+        didSet {
+            statusLabel.text = characterObserver
+                print("start")
+                var arrayOfObserver = Array(characterObserver)
+                print(arrayOfObserver)
+                print(currentWord)
+            print(questionArray)
+                
+                if arrayOfObserver.count > 0 {
+                    // Работает сильно лучше, но надо будет понять, как добавлять вместе одинаковые буквы!
+                    for char in currentWord {
+                        if char == arrayOfObserver[0] {
+                            print("Found it!")
+                            questionArray.remove(at: currentWord.firstIndex(of: char)!)
+                            questionArray.insert(char, at: currentWord.firstIndex(of: char)!)
+                            wordTextField.text = String(questionArray)
+                    }
+                }
+            }
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +54,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         subviewsSettings()
         makeConstraints()
         addWordToTextField()
+        textFieldChanged(guessTextField)
     }
     
     func addSubviews() {
@@ -35,14 +64,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func addWordToTextField() {
-        currentWord = randomWordArray.randomElement()?.lowercased()
-        let wordLength = currentWord?.count
-        if let unwrapped = wordLength {
-            for _ in 0..<unwrapped {
-                wordTextField.text! += "?"
-                statusLabel.text = "\(unwrapped) : \(currentWord!)"
-            }
+        currentWord = Array((randomWordArray.randomElement()?.lowercased())!)
+        let wordLength = currentWord.count
+            for _ in 0..<wordLength {
+                wordTextField.text! += Array("?")
         }
+        questionArray = Array(wordTextField.text!)
     }
 
     func subviewsSettings() {
@@ -55,6 +82,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         guessTextField.layer.borderColor = UIColor.lightGray.cgColor
         guessTextField.layer.borderWidth = 1
         guessTextField.autocapitalizationType = UITextAutocapitalizationType.none
+        guessTextField.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.font = UIFont.systemFont(ofSize: 25)
@@ -82,6 +110,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         return updatedText.count <= 1
+    }
+    
+    @objc func textFieldChanged (_ textField: UITextField) {
+        if let unwrapped = textField.text {
+            characterObserver = unwrapped
+        }
     }
 
 }
