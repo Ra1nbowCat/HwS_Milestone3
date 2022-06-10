@@ -7,15 +7,21 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
     
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    var randomWord = ["Milk", "Coconut", "Computer", "Language", "Book"]
+    let randomWordArray = ["Milk", "Coconut", "Computer", "Language", "Book"]
+    var currentWord: String?
+    let customRange = NSRange(location: 0, length: 1)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        guessTextField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
+        guessTextField.delegate = self
+        
         addSubviews()
         subviewsSettings()
         makeConstraints()
@@ -29,7 +35,14 @@ class ViewController: UIViewController {
     }
     
     func addWordToTextField() {
-        wordTextField.text = randomWord.randomElement()?.lowercased()
+        currentWord = randomWordArray.randomElement()?.lowercased()
+        let wordLength = currentWord?.count
+        if let unwrapped = wordLength {
+            for _ in 0..<unwrapped {
+                wordTextField.text! += "?"
+                statusLabel.text = "\(unwrapped) : \(currentWord!)"
+            }
+        }
     }
 
     func subviewsSettings() {
@@ -41,12 +54,12 @@ class ViewController: UIViewController {
         guessTextField.font = UIFont.systemFont(ofSize: 35)
         guessTextField.layer.borderColor = UIColor.lightGray.cgColor
         guessTextField.layer.borderWidth = 1
+        guessTextField.autocapitalizationType = UITextAutocapitalizationType.none
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.font = UIFont.systemFont(ofSize: 25)
         statusLabel.textAlignment = .center
         statusLabel.numberOfLines = 3
-        statusLabel.text = "aaaaaaaaaaaaaaaaaa"
     }
     
     func makeConstraints() {
@@ -62,6 +75,13 @@ class ViewController: UIViewController {
             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
         ])
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+        return updatedText.count <= 1
     }
 
 }
