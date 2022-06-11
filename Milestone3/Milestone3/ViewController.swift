@@ -12,30 +12,29 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    let randomWordArray = ["milk", "papik", "kek", "Hehs"]
+    var randomWordArray = ["milk", "papik", "kek", "Hehs", "meh1"]
     var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
     var questionArray = [Character]()
     var characterObserver = "" {
         didSet {
-            statusLabel.text = characterObserver
-                let arrayOfObserver = Array(characterObserver)
-                if arrayOfObserver.count > 0 {
-                    for (index, char) in currentWord.enumerated() {
-                        if char == arrayOfObserver[0] {
-                            print("Found it!")
-                            questionArray.remove(at: index)
-                            questionArray.insert(char, at: index)
-                            wordTextField.text = String(questionArray)
-                        }
+            let arrayOfObserver = Array(characterObserver)
+            if arrayOfObserver.count > 0 {
+                for (index, char) in currentWord.enumerated() {
+                    if char == arrayOfObserver[0] {
+                        questionArray.remove(at: index)
+                        questionArray.insert(char, at: index)
+                        wordTextField.text = String(questionArray)
                     }
-                    if questionArray == currentWord {
-                        wordTextField.text = ""
-                        addWordToTextField()
-                    }
+                }
+                
+                if questionArray == currentWord {
+                    wordTextField.text = ""
+                    addWordToTextField()
                 }
             }
         }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +56,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func addWordToTextField() {
+        for (index,word) in randomWordArray.enumerated() {
+            let decimalCharacters = CharacterSet.decimalDigits
+            let decimalRange = word.rangeOfCharacter(from: decimalCharacters)
+            if decimalRange != nil {
+                print("Numbers found in \(word)")
+                randomWordArray.remove(at: index)
+                print(randomWordArray)
+            }
+        }
         currentWord = Array((randomWordArray.randomElement()?.lowercased())!)
         let wordLength = currentWord.count
             for _ in 0..<wordLength {
