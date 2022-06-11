@@ -12,7 +12,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    var randomWordArray = ["milk", "papik", "kek", "Hehs", "meh1"]
+    var randomWordArray = ["milk", "papik", "kek", "Hehs", "meh1", "meh ", "meh,"]
     var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
     var questionArray = [Character]()
@@ -56,11 +56,30 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func addWordToTextField() {
+        //Немного дурацки, что приходится это все засовывать в разные итерации, но вместе в рамках одной итерации не работало, ругался на индекс
         for (index,word) in randomWordArray.enumerated() {
             let decimalCharacters = CharacterSet.decimalDigits
             let decimalRange = word.rangeOfCharacter(from: decimalCharacters)
             if decimalRange != nil {
-                print("Numbers found in \(word)")
+                print("Numbers or signs found in \(word)")
+                randomWordArray.remove(at: index)
+                print(randomWordArray)
+            }
+        }
+        for (index,word) in randomWordArray.enumerated() {
+            let signsCharacters = CharacterSet.whitespacesAndNewlines
+            let signsRange = word.rangeOfCharacter(from: signsCharacters)
+            if signsRange != nil {
+                print("Whitespace or lines found in \(word)")
+                randomWordArray.remove(at: index)
+                print(randomWordArray)
+            }
+        }
+        for (index,word) in randomWordArray.enumerated() {
+            let punctuationCharacters = CharacterSet.punctuationCharacters
+            let punctuationRange = word.rangeOfCharacter(from: punctuationCharacters)
+            if punctuationRange != nil {
+                print("Punctuation found in \(word)")
                 randomWordArray.remove(at: index)
                 print(randomWordArray)
             }
