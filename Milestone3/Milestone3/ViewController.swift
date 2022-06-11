@@ -9,6 +9,7 @@ import UIKit
 
 class ViewController: UIViewController, UITextFieldDelegate {
     
+    let submitButton = UIButton()
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
@@ -53,6 +54,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(wordTextField)
         view.addSubview(guessTextField)
         view.addSubview(statusLabel)
+        view.addSubview(submitButton)
     }
     
     func addWordToTextField() {
@@ -102,12 +104,17 @@ class ViewController: UIViewController, UITextFieldDelegate {
         guessTextField.layer.borderColor = UIColor.lightGray.cgColor
         guessTextField.layer.borderWidth = 1
         guessTextField.autocapitalizationType = UITextAutocapitalizationType.none
-        guessTextField.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
+        //guessTextField.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.font = UIFont.systemFont(ofSize: 25)
         statusLabel.textAlignment = .center
         statusLabel.numberOfLines = 3
+        
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.setTitle("Submit character", for: .normal)
+        submitButton.setTitleColor(.systemBlue, for: .normal)
+        submitButton.addTarget(self, action: #selector(submitCharacter), for: .touchUpInside)
     }
     
     func makeConstraints() {
@@ -121,7 +128,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
             
             statusLabel.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: -(view.frame.height / 4)),
             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            submitButton.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: view.frame.height / 3)
         ])
     }
     
@@ -134,6 +144,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     @objc func textFieldChanged (_ textField: UITextField) {
         if let unwrapped = textField.text {
+            characterObserver = unwrapped
+        }
+    }
+    
+    @objc func submitCharacter() {
+        if let unwrapped = guessTextField.text {
             characterObserver = unwrapped
         }
     }
