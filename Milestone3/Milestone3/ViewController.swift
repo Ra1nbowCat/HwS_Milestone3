@@ -20,6 +20,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
     var questionArray = [Character]()
     var score = 0 {
         didSet {
+            if score < 0 {
+                let ac = UIAlertController(title: "Game over", message: "Sorry, you lost this game", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "Start a new game", style: .cancel))
+                present(ac, animated: true)
+                statusLabel.text = ""
+                wordTextField.text = ""
+                addWordToTextField()
+                score += 1
+            }
             statusLabel.text = "Score: \(score)"
         }
     }
@@ -33,6 +42,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
                         questionArray.insert(char, at: index)
                         wordTextField.text = String(questionArray)
                         score += 1
+                        // Вот это место плохо сейчас работает, не вычитает, но прибавляет уже вписанные буквы.
                     } else if !currentWord.contains(arrayOfObserver[0]) {
                         score -= 1
                         return
