@@ -12,37 +12,30 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    let randomWordArray = ["milk", "papik", "kek"]
+    let randomWordArray = ["milk", "papik", "kek", "Hehs"]
     var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
     var questionArray = [Character]()
-    var questionObserver = "" {
-        didSet {
-            
-        }
-    }
     var characterObserver = "" {
         didSet {
             statusLabel.text = characterObserver
-                print("start")
-                var arrayOfObserver = Array(characterObserver)
-                print(arrayOfObserver)
-                print(currentWord)
-            print(questionArray)
-                
+                let arrayOfObserver = Array(characterObserver)
                 if arrayOfObserver.count > 0 {
-                    // Работает сильно лучше, но надо будет понять, как добавлять вместе одинаковые буквы!
-                    for char in currentWord {
+                    for (index, char) in currentWord.enumerated() {
                         if char == arrayOfObserver[0] {
                             print("Found it!")
-                            questionArray.remove(at: currentWord.firstIndex(of: char)!)
-                            questionArray.insert(char, at: currentWord.firstIndex(of: char)!)
+                            questionArray.remove(at: index)
+                            questionArray.insert(char, at: index)
                             wordTextField.text = String(questionArray)
+                        }
+                    }
+                    if questionArray == currentWord {
+                        wordTextField.text = ""
+                        addWordToTextField()
                     }
                 }
             }
         }
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
