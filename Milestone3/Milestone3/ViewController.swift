@@ -14,9 +14,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let guessTextField = UITextField()
     let statusLabel = UILabel()
     var randomWordArray = ["milk", "papik", "kek", "Hehs", "meh1", "meh ", "meh,"]
+    let cheers = ["Good job!", "Well done!", "Keep going!"]
     var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
     var questionArray = [Character]()
+    var score = 0 {
+        didSet {
+            statusLabel.text = "Score: \(score)"
+        }
+    }
     var characterObserver = "" {
         didSet {
             let arrayOfObserver = Array(characterObserver)
@@ -26,10 +32,18 @@ class ViewController: UIViewController, UITextFieldDelegate {
                         questionArray.remove(at: index)
                         questionArray.insert(char, at: index)
                         wordTextField.text = String(questionArray)
+                        score += 1
+                    } else if !currentWord.contains(arrayOfObserver[0]) {
+                        score -= 1
+                        return
                     }
                 }
                 
                 if questionArray == currentWord {
+                    statusLabel.text! += """
+                    
+                    \(cheers.randomElement()!)
+                    """
                     wordTextField.text = ""
                     addWordToTextField()
                 }
@@ -47,7 +61,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
         subviewsSettings()
         makeConstraints()
         addWordToTextField()
-        textFieldChanged(guessTextField)
     }
     
     func addSubviews() {
@@ -104,7 +117,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
         guessTextField.layer.borderColor = UIColor.lightGray.cgColor
         guessTextField.layer.borderWidth = 1
         guessTextField.autocapitalizationType = UITextAutocapitalizationType.none
-        //guessTextField.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.font = UIFont.systemFont(ofSize: 25)
@@ -142,15 +154,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
         return updatedText.count <= 1
     }
     
-    @objc func textFieldChanged (_ textField: UITextField) {
-        if let unwrapped = textField.text {
-            characterObserver = unwrapped
-        }
-    }
-    
     @objc func submitCharacter() {
         if let unwrapped = guessTextField.text {
             characterObserver = unwrapped
+            guessTextField.text?.removeAll()
         }
     }
 
