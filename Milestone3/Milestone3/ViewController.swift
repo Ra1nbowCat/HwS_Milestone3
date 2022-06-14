@@ -13,12 +13,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let wordTextField = UITextField()
     let guessTextField = UITextField()
     let statusLabel = UILabel()
-    var randomWordArray = ["milk", "papik", "kek", "Hehs", "meh1", "meh ", "meh,"]
+    var randomWordArray = ["milk", "Cat", "LaPtOp", "Brother", "meh1", "meh ", "meh,"]
     let cheers = ["Good job!", "Well done!", "Keep going!"]
     var currentWord = [Character]()
     let customRange = NSRange(location: 0, length: 1)
     var questionArray = [Character]()
-    var score = 0 {
+    var checkerArray = [Character]()
+    var score = 7 {
         didSet {
             if score < 0 {
                 let ac = UIAlertController(title: "Game over", message: "Sorry, you lost this game", preferredStyle: .alert)
@@ -41,21 +42,37 @@ class ViewController: UIViewController, UITextFieldDelegate {
                         questionArray.remove(at: index)
                         questionArray.insert(char, at: index)
                         wordTextField.text = String(questionArray)
-                        score += 1
-                        // Вот это место плохо сейчас работает, не вычитает, но прибавляет уже вписанные буквы.
+                        if !checkerArray.contains(char) {
+                            ///score += 1
+                        } else {
+                            score -= 1
+                            statusLabel.text! += """
+                            
+                            Same letter!
+                            """
+                            return
+                        }
                     } else if !currentWord.contains(arrayOfObserver[0]) {
                         score -= 1
+                        statusLabel.text! += """
+                        
+                        Word doesn't have this letter!
+                        """
                         return
                     }
                 }
                 
+                checkerArray = questionArray
+                
                 if questionArray == currentWord {
-                    statusLabel.text! += """
-                    
-                    \(cheers.randomElement()!)
-                    """
                     wordTextField.text = ""
                     addWordToTextField()
+                    checkerArray = []
+                    score = 7
+                    statusLabel.text! += """
+                    
+                    \(cheers.randomElement()!) Next word!
+                    """
                 }
             }
         }
@@ -63,6 +80,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .systemGray6
         
         guessTextField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
         guessTextField.delegate = self
@@ -132,10 +151,16 @@ class ViewController: UIViewController, UITextFieldDelegate {
         statusLabel.font = UIFont.systemFont(ofSize: 25)
         statusLabel.textAlignment = .center
         statusLabel.numberOfLines = 3
+        statusLabel.text = """
+        Score: \(score)
+        Try to guess this word!
+        """
         
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         submitButton.setTitle("Submit character", for: .normal)
-        submitButton.setTitleColor(.systemBlue, for: .normal)
+        submitButton.setTitleColor(.white, for: .normal)
+        submitButton.backgroundColor = .systemBlue
+        submitButton.layer.cornerRadius = 6
         submitButton.addTarget(self, action: #selector(submitCharacter), for: .touchUpInside)
     }
     
@@ -147,13 +172,16 @@ class ViewController: UIViewController, UITextFieldDelegate {
             guessTextField.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: view.frame.height / 4),
             guessTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             guessTextField.widthAnchor.constraint(equalToConstant: view.frame.width / 1.5),
+            guessTextField.heightAnchor.constraint(equalTo: submitButton.heightAnchor),
             
             statusLabel.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: -(view.frame.height / 4)),
             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
             submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            submitButton.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: view.frame.height / 3)
+            submitButton.centerYAnchor.constraint(equalTo: wordTextField.centerYAnchor, constant: view.frame.height / 3),
+            submitButton.widthAnchor.constraint(equalToConstant: view.frame.width / 1.5),
+            submitButton.heightAnchor.constraint(equalToConstant: view.frame.height / 20)
         ])
     }
     
